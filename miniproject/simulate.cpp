@@ -3,34 +3,69 @@
 
 using namespace dolfin;
 
+//reading input file
+
+std::string output_file_path;
+std::string container;
+std::vector<double> electrode_positions;  // Positions along x-axis in micrometers
+std::vector<double> electrode_voltages;  // Voltages in volts
+std::vector<double> electrode_widths;
+ 
+    std::ifstream simulation_input_file("/Users/alekseidushanin/Documents/GitHub/LFI_KT/miniproject/dataset/sim_input.txt");
+    if (simulation_input_file.is_open())
+    {
+        std::getline(simulation_input_file, output_file_path);
+        
+        for (int i = 0; i < 5; i++) {
+            std::getline(simulation_input_file, container);
+            electrode_positions.push_back(stod(container));
+        }
+
+        std::getline(simulation_input_file, container);
+
+        for (int i = 0; i < 5; i++) {
+            std::getline(simulation_input_file, container);
+            electrode_widths.push_back(stod(container));
+        }
+        
+        std::getline(simulation_input_file, container);
+
+        for (int i = 0; i < 5; i++) {
+            std::getline(simulation_input_file, container);
+            electrode_voltages.push_back(stod(container));
+        }
+    }
+
+    simulation_input_file.close();
+
 // Define electrode positions
 class Electrode1 : public SubDomain {
     bool inside(const Array<double>& x, bool on_boundary) const override {
-        return (on_boundary && (x[0] >= 0.0 && x[0] <= 0.2) && (x[1] < DOLFIN_EPS));
+        return (on_boundary && (x[0] >= electrode_positions[0] && x[0] <= (electrode_positions[0] + electrode_widths[0])) && (x[1] < DOLFIN_EPS));
     }
 };
 
 class Electrode2 : public SubDomain {
     bool inside(const Array<double>& x, bool on_boundary) const override {
-        return (on_boundary && (x[0] >= 0.2 && x[0] <= 0.4) && (x[1] < DOLFIN_EPS));
+        return (on_boundary && (x[0] >= electrode_positions[1] && x[0] <= (electrode_positions[1] + electrode_widths[1])) && (x[1] < DOLFIN_EPS));
     }
 };
 
 class Electrode3 : public SubDomain {
     bool inside(const Array<double>& x, bool on_boundary) const override {
-        return (on_boundary && (x[0] >= 0.4 && x[0] <= 0.6) && (x[1] < DOLFIN_EPS));
+        return (on_boundary && (x[0] >= electrode_positions[2] && x[0] <= (electrode_positions[2] + electrode_widths[2]))) && (x[1] < DOLFIN_EPS));
     }
 };
 
 class Electrode4 : public SubDomain {
     bool inside(const Array<double>& x, bool on_boundary) const override {
-        return (on_boundary && (x[0] >= 0.6 && x[0] <= 0.8) && (x[1] < DOLFIN_EPS));
+        return (on_boundary && (x[0] >= electrode_positions[3] && x[0] <= (electrode_positions[3] + electrode_widths[3])) && (x[1] < DOLFIN_EPS));
     }
 };
 
 class Electrode5 : public SubDomain {
     bool inside(const Array<double>& x, bool on_boundary) const override {
-        return (on_boundary && (x[0] >= 0.8 && x[0] <= 1.0) && (x[1] < DOLFIN_EPS));
+        return (on_boundary && (x[0] >= electrode_positions[4] && x[0] <= (electrode_positions[4] + electrode_widths[4])) && (x[1] < DOLFIN_EPS));
     }
 };
 
@@ -118,11 +153,11 @@ int main() {
 
     // Create boundary conditions
     std::vector<const DirichletBC*> bcs;
-    DirichletBC bc_left(V, voltage_DC, electrode_1);
-    DirichletBC bc_right(V, voltage_RC, electrode_2);
-    DirichletBC bc_top(V, voltage_DC, electrode_3);
-    DirichletBC bc_bl(V, voltage_RC, electrode_4);
-    DirichletBC bc_br(V, voltage_DC, electrode_5);
+    DirichletBC bc_left(V, electrode_voltages[0], electrode_1);
+    DirichletBC bc_right(V, electrode_voltages[1], electrode_2);
+    DirichletBC bc_top(V, electrode_voltages[2], electrode_3);
+    DirichletBC bc_bl(V, electrode_voltages[3], electrode_4);
+    DirichletBC bc_br(V, electrode_voltages[4], electrode_5);
     
     bcs.push_back(&bc_left);
     bcs.push_back(&bc_right);
