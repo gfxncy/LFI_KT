@@ -1,0 +1,1 @@
+/Users/alekseidushanin/Documents/GitHub/LFI_KT/miniproject/dataset/hello2.txt
