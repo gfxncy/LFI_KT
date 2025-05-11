@@ -175,7 +175,7 @@ int main() {
     solve(a == L, u, bcs);
 
     // Save potential solution
-    File potential_file("potential.pvd");
+    File potential_file(output_file_path);
     potential_file << u;
 
     // Create function space for scalar field (using same space as potential)
@@ -192,8 +192,8 @@ int main() {
     E_magnitude.interpolate(*E_mag_expr);
 
     // Save electric field magnitude
-    File emag_file("electric_field_magnitude.pvd");
-    emag_file << E_magnitude;
+    //File emag_file("electric_field_magnitude.pvd");
+    //emag_file << E_magnitude;
 
     return 0;
 }
